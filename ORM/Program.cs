@@ -8,76 +8,126 @@ namespace ORM
     {
         static void Main(string[] args)
         {
-            using (var context = new AppDbContext(new Microsoft.EntityFrameworkCore.DbContextOptions<AppDbContext>()))
+            
+            using (var context = new AppDbContext(new DbContextOptions<AppDbContext>()))
             {
-
-                var group = new Group
+                var author1 = new Author
                 {
-                    Name = "A Grubu"
+                    Name = "Nizami Gəncəvi",
+                    Country = "Azerbaijan"
                 };
 
-
-                var student1 = new Student
+                var author2 = new Author
                 {
-                    Name = "Ali Yılmaz",
-                    Age = 20,
-                    Group = group,
-                    StudentDetail = new StudentDetail
-                    {
-                        Address = "Address 1",
-                        PhoneNumber = "555-0001"
-                    }
+                    Name = "Fyodor Dostoyevski",
+                    Country = "Russia"
                 };
 
-                var student2 = new Student
-                {
-                    Name = "Ayşe Demir",
-                    Age = 22,
-                    Group = group,
-                    StudentDetail = new StudentDetail
-                    {
-                        Address = "Address 2",
-                        PhoneNumber = "555-0002"
-                    }
-                };
+                context.AddAuthor(author1);
+                context.AddAuthor(author2);
 
-                context.Groups.Add(group);
-                context.Students.Add(student1);
-                context.Students.Add(student2);
-                context.SaveChanges();
-
-                Console.WriteLine("Data saved successfully!");
+                Console.WriteLine("Authors added successfully!");
             }
-            using (var context = new AppDbContext(new Microsoft.EntityFrameworkCore.DbContextOptions<AppDbContext>()))
+
+            
+            using (var context = new AppDbContext(new DbContextOptions<AppDbContext>()))
             {
-                var students = context.Students
-                    .Include(s => s.Group)
-                    .Include(s => s.StudentDetail)
-                    .ToList();
-                foreach (var student in students)
+                var book1 = new Book
                 {
-                    Console.WriteLine(student);
+                    Title = "Leyli və Məcnun",
+                    Year = 1188,
+                    AuthorId = 1
+                };
+
+                var book2 = new Book
+                {
+                    Title = "Cinayət və Cəza",
+                    Year = 1866,
+                    AuthorId = 2
+                };
+
+                context.AddBook(book1);
+                context.AddBook(book2);
+
+                Console.WriteLine("Books added successfully!");
+            }
+
+            
+            using (var context = new AppDbContext(new DbContextOptions<AppDbContext>()))
+            {
+                var authors = context.GetAllAuthors();
+                Console.WriteLine("\n--- Bütün Authors ---");
+                foreach (var author in authors)
+                {
+                    Console.WriteLine(author);
+                    foreach (var book in author.Books)
+                    {
+                        Console.WriteLine($"  - {book.Title}");
+                    }
                 }
             }
-            using (var context = new AppDbContext(new Microsoft.EntityFrameworkCore.DbContextOptions<AppDbContext>()))
+
+            
+            using (var context = new AppDbContext(new DbContextOptions<AppDbContext>()))
             {
-                context.CreateModels(
-                    new Group { Name = "C grubu" },
-                    new Student
-                    {
-                        Name = "Rashid Dursunov",
-                        Age = 21,
-                        GroupId = 2,
-                        StudentDetail = new StudentDetail
-                        {
-                            Address = "Address nese",
-                            PhoneNumber = "055-5555"
-                        }
-                    };
+                var author = context.GetAuthorById(1);
+                Console.WriteLine("\n--- Author by Id ---");
+                Console.WriteLine(author);
             }
 
+           
+            using (var context = new AppDbContext(new DbContextOptions<AppDbContext>()))
+            {
+                var author = context.GetAuthorById(1);
+                if (author != null)
+                {
+                    author.Country = "Azərbaycan";
+                    context.UpdateAuthor(author);
+                    Console.WriteLine("\n--- Author updated ---");
+                }
+            }
+
+           
+            using (var context = new AppDbContext(new DbContextOptions<AppDbContext>()))
+            {
+                var books = context.GetAllBooksWithAuthors();
+                Console.WriteLine("\n--- Bütün Books with Authors ---");
+                foreach (var book in books)
+                {
+                    Console.WriteLine(book);
+                }
+            }
+
+            
+            using (var context = new AppDbContext(new DbContextOptions<AppDbContext>()))
+            {
+                var book = context.Books.FirstOrDefault();
+                if (book != null)
+                {
+                    book.Year = 1190;
+                    context.UpdateBook(book);
+                    Console.WriteLine("\n--- Book updated ---");
+                }
+            }
+
+            
+            using (var context = new AppDbContext(new DbContextOptions<AppDbContext>()))
+            {
+                
+                var authorToDelete = context.GetAuthorById(2);
+                if (authorToDelete != null)
+                {
+                    foreach (var book in authorToDelete.Books.ToList())
+                    {
+                        context.DeleteBook(book.Id);
+                    }
+                    context.DeleteAuthor(2);
+                    Console.WriteLine("\n--- Author deleted ---");
+                }
+            }
+
+            Console.WriteLine("\nAll operations completed!");
         }
     }
 }
-// updated to include CreateModels method call
 

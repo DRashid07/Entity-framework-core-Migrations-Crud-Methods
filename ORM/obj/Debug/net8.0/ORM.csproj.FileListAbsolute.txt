@@ -128,3 +128,4 @@ C:\Users\rashided\Desktop\ORM\ORM\obj\Debug\net8.0\refint\ORM.dll
 C:\Users\rashided\Desktop\ORM\ORM\obj\Debug\net8.0\ORM.pdb
 C:\Users\rashided\Desktop\ORM\ORM\obj\Debug\net8.0\ORM.genruntimeconfig.cache
 C:\Users\rashided\Desktop\ORM\ORM\obj\Debug\net8.0\ref\ORM.dll
+C:\Users\rashided\Desktop\ORM\ORM\obj\Debug\net8.0\ORM.sourcelink.json
